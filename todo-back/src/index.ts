@@ -7,30 +7,38 @@ import { sql } from 'drizzle-orm';
 const app = new Hono();
 
 const createToDoSchema = z.object({
-  title: z.string(),
+  title: z.string().min(1, "Title is required"),
   completed: z.boolean().optional(),
 });
 
 // Get all ToDo items
 app.get('/todos', async (c) => {
-  const result = await db.select().from(todos).execute();
-  return c.json(result);
+  try {
+    const result = await db.select().from(todos).execute();
+    return c.json(result);
+  } catch (error) {
+    return c.json({ error: 'Failed to fetch ToDo items' }, 500);
+  }
 });
 
 // Get a single ToDo item by ID
 app.get('/todos/:id', async (c) => {
-  const id = c.req.param('id');
-  const result = await db.select().from(todos).where(sql`${todos.id} = ${id}`).execute();
-  if (result.length === 0) {
-    return c.json({ error: 'ToDo not found' }, 404);
+  try {
+    const id = c.req.param('id');
+    const result = await db.select().from(todos).where(sql`${todos.id} = ${id}`).execute();
+    if (result.length === 0) {
+      return c.json({ error: 'ToDo not found' }, 404);
+    }
+    return c.json(result[0]);
+  } catch (error) {
+    return c.json({ error: 'Failed to fetch ToDo item' }, 500);
   }
-  return c.json(result[0]);
 });
 
 // Create a new ToDo item
 app.post('/todos', async (c) => {
   try {
-    const body = await c.req.json(); // Parse JSON body directly
+    const body = await c.req.json();
     console.log('Received body:', body); // Log the received body
     const parsed = createToDoSchema.safeParse(body);
 
@@ -53,7 +61,7 @@ app.post('/todos', async (c) => {
 app.put('/todos/:id', async (c) => {
   try {
     const id = c.req.param('id');
-    const body = await c.req.json(); // Parse JSON body directly
+    const body = await c.req.json();
     console.log('Received body:', body); // Log the received body
     const parsed = createToDoSchema.partial().safeParse(body);
 
@@ -74,9 +82,13 @@ app.put('/todos/:id', async (c) => {
 
 // Delete a ToDo item by ID
 app.delete('/todos/:id', async (c) => {
-  const id = c.req.param('id');
-  await db.delete(todos).where(sql`${todos.id} = ${id}`).execute();
-  return c.json({ message: 'ToDo deleted' });
+  try {
+    const id = c.req.param('id');
+    await db.delete(todos).where(sql`${todos.id} = ${id}`).execute();
+    return c.json({ message: 'ToDo deleted' });
+  } catch (error) {
+    return c.json({ error: 'Failed to delete ToDo item' }, 500);
+  }
 });
 
 // Export the app for usage in index.ts
