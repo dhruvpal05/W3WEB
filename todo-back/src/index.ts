@@ -1,9 +1,15 @@
 import { Hono } from 'hono';
+import { z } from 'zod';
 import { db } from './db';
 import { todos } from './db/schema';
 import { sql } from 'drizzle-orm';
 
 const app = new Hono();
+
+const createToDoSchema = z.object({
+  title: z.string(),
+  completed: z.boolean().optional(),
+});
 
 // Get all ToDo items
 app.get('/todos', async (c) => {
@@ -23,26 +29,47 @@ app.get('/todos/:id', async (c) => {
 
 // Create a new ToDo item
 app.post('/todos', async (c) => {
-  const body = await c.req.json();
-  const newToDo = await db.insert(todos).values({
-    title: body.title,
-    completed: body.completed ?? false,
-  }).execute();
-  return c.json(newToDo, 201);
+  try {
+    const body = await c.req.json(); // Parse JSON body directly
+    console.log('Received body:', body); // Log the received body
+    const parsed = createToDoSchema.safeParse(body);
+
+    if (!parsed.success) {
+      return c.json({ error: parsed.error.errors }, 400);
+    }
+
+    const newToDo = await db.insert(todos).values({
+      title: parsed.data.title,
+      completed: parsed.data.completed ?? false,
+    }).execute();
+
+    return c.json(newToDo, 201);
+  } catch (error) {
+    return c.json({ error: 'Invalid JSON' }, 400);
+  }
 });
 
 // Update a ToDo item by ID
 app.put('/todos/:id', async (c) => {
-  const id = c.req.param('id');
-  const body = await c.req.json();
-  const updatedToDo = await db.update(todos)
-    .set({
-      title: body.title,
-      completed: body.completed,
-    })
-    .where(sql`${todos.id} = ${id}`)
-    .execute();
-  return c.json(updatedToDo);
+  try {
+    const id = c.req.param('id');
+    const body = await c.req.json(); // Parse JSON body directly
+    console.log('Received body:', body); // Log the received body
+    const parsed = createToDoSchema.partial().safeParse(body);
+
+    if (!parsed.success) {
+      return c.json({ error: parsed.error.errors }, 400);
+    }
+
+    const updatedToDo = await db.update(todos)
+      .set(parsed.data)
+      .where(sql`${todos.id} = ${id}`)
+      .execute();
+
+    return c.json(updatedToDo);
+  } catch (error) {
+    return c.json({ error: 'Invalid JSON' }, 400);
+  }
 });
 
 // Delete a ToDo item by ID
