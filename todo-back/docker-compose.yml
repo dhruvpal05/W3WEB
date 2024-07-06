@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    command: bun run src/index.ts
+    environment:
+      DATABASE_URL: postgresql://todo_owner:gFEXVxf9sRU8@ep-nameless-credit-a15rva1o.ap-southeast-1.aws.neon.tech/todo?sslmode=require
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
