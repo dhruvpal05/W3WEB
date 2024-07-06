@@ -93,7 +93,7 @@ app.delete('/todos/:id', async (c) => {
 
 // Export the app for usage in index.ts
 export default { 
-  port: 3000, 
+  port: 3001, 
   fetch: app.fetch, 
 } 
-console.log('Server running on port 3000');
+console.log('Server running on port 3001');

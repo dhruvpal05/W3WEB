@@ -5,8 +5,9 @@ import { FormEventHandler, useState } from "react";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 import Modal from "./Model";
 import { useRouter } from "next/navigation";
-import { IoCheckmarkDoneCircleSharp } from "react-icons/io5";
-// import { deleteTodo, editTodo } from "@/api";
+import { IoCheckmarkDoneCircleOutline, IoCheckmarkDoneCircleSharp } from "react-icons/io5";
+import TodoList from "./TodoList";
+import { deleteTodo, editTodo } from "@/api";
 
 interface TaskProps {
   task: ITask;
@@ -16,16 +17,17 @@ const Task: React.FC<TaskProps> = ({ task }) => {
   const router = useRouter();
   const [openModalEdit, setOpenModalEdit] = useState<boolean>(false);
   const [openModalDeleted, setOpenModalDeleted] = useState<boolean>(false);
-  const [taskToEdit, setTaskToEdit] = useState<string>(task.text);
+  const [todoComplete, settodoComplete] = useState<boolean>(false);
+  const [taskToEdit, setTaskToEdit] = useState<string>(task.title);
 
   const handleSubmitEditTodo: FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
-    // await editTodo({
-    //   id: task.id,
-    //   text: taskToEdit,
-    // });
-    // setOpenModalEdit(false);
-    // router.refresh();
+    await editTodo({
+      id: task.id,
+      title: taskToEdit,
+    });
+    setOpenModalEdit(false);
+    router.refresh();
   };
 
   const handleDeleteTask = async (id: string) => {
@@ -36,7 +38,7 @@ const Task: React.FC<TaskProps> = ({ task }) => {
 
   return (
     <tr key={task.id}>
-      <td className='w-full'>{task.text}</td>
+      <td className='w-full'>{task.title}</td>
       <td className='flex gap-5'>
         <FiEdit
           onClick={() => setOpenModalEdit(true)}
@@ -67,7 +69,8 @@ const Task: React.FC<TaskProps> = ({ task }) => {
           className='text-red-500'
           size={25}
         />
-        <IoCheckmarkDoneCircleSharp  className='text-red-500'/>
+        { todoComplete ? <IoCheckmarkDoneCircleSharp onClick={() => settodoComplete(false)}  className='text-red-500' size={25}/> : <IoCheckmarkDoneCircleOutline
+         onClick={() => settodoComplete(true)} className='text-red-500' size={25} />}
         <Modal modalOpen={openModalDeleted} setModalOpen={setOpenModalDeleted}>
           <h3 className='text-lg'>
             Are you sure, you want to delete this task?
