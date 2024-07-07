@@ -8,19 +8,24 @@ import { cors } from 'hono/cors';
 
 const app = new Hono();
 
-const corsOptions ={
-  origin:'*', 
-  credentials:true,            //access-control-allow-credentials:true
-  optionSuccessStatus:200,
-}
+// Enable CORS for all routes
+app.use(
+  '*',
+  cors({
+    origin: 'https://w3-web.vercel.app',
+    allowHeaders: ['X-Custom-Header', 'Upgrade-Insecure-Requests'],
+    allowMethods: ['GET', 'POST', 'PUT', 'DELETE'],
+    exposeHeaders: ['Content-Length', 'X-Kuma-Revision'],
+    maxAge: 600,
+    credentials: true,
+  })
+)
 
-app.use(cors(corsOptions))
-
-app.use('*', cors({
-  origin: 'https://w3-web.vercel.app', // Adjust the origin to your frontend's URL
-  allowMethods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowHeaders: ['Content-Type'],
-}));
+// app.use('*', cors({
+//   origin: 'https://w3-web.vercel.app', // Adjust the origin to your frontend's URL
+//   allowMethods: ['GET', 'POST', 'PUT', 'DELETE'],
+//   allowHeaders: ['Content-Type'],
+// }));
 
 // app.use('*', cors({
 //   origin: 'https://w3-web.vercel.app/', // Replace with your actual frontend domain
@@ -114,8 +119,8 @@ app.delete('/todos/:id', async (c) => {
 });
 
 // Export the app for usage in index.ts
-export default { 
-  port: 3001, 
-  fetch: app.fetch, 
-} 
+export default {
+  port: 3001,
+  fetch: app.fetch,
+}
 console.log('Server running on port 3001');
