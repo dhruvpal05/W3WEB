@@ -4,8 +4,17 @@ import { db } from './db';
 import { todos } from './db/schema';
 import { sql } from 'drizzle-orm';
 import { cors } from 'hono/cors';
+// import cors = require("cors");
 
 const app = new Hono();
+
+const corsOptions ={
+  origin:'*', 
+  credentials:true,            //access-control-allow-credentials:true
+  optionSuccessStatus:200,
+}
+
+app.use(cors(corsOptions))
 
 app.use('*', cors({
   origin: 'https://w3-web.vercel.app', // Adjust the origin to your frontend's URL

@@ -13,16 +13,23 @@ const AddTask = () => {
   const { data: session } = useSession();
 
   const handleSubmitNewTodo: FormEventHandler<HTMLFormElement> = async (e) => {
+    console.log('handleSubmitNewTodo called');
     e.preventDefault();
-    console.log(newTaskValue);
-    await addTodo({
-      id: Date.now().toString(),
-      title: newTaskValue,
-      completed: false,
-    });
-    setNewTaskValue("");
-    setModalOpen(false);
-    router.refresh();
+    console.log('New task value:', newTaskValue);
+
+    try {
+      await addTodo({
+        id: Date.now().toString(),
+        title: newTaskValue,
+        completed: false,
+      });
+      console.log('Todo added successfully');
+      setNewTaskValue("");
+      setModalOpen(false);
+      router.refresh();
+    } catch (error) {
+      console.error('Error in handleSubmitNewTodo:', error);
+    }
   };
 
   return (

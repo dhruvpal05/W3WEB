@@ -16,7 +16,7 @@ export const addTodo = async (todo: Todo): Promise<Todo> => {
   try {
     console.log(`Making request to: ${baseUrl}/todos`);
     console.log(`Request body: ${JSON.stringify(todo)}`);
-    // const res = await fetch(`${baseUrl}/todos`, { cache: 'no-store' });
+    
     const res = await fetch(`${baseUrl}/todos`, {
       method: 'POST',
       headers: {
@@ -28,6 +28,8 @@ export const addTodo = async (todo: Todo): Promise<Todo> => {
     console.log(`Response status: ${res.status}`);
     
     if (!res.ok) {
+      const errorText = await res.text();
+      console.error(`Error response text: ${errorText}`);
       throw new Error(`Failed to add todo, status: ${res.status}`);
     }
     
