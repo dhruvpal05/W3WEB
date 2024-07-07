@@ -4,7 +4,6 @@ import { db } from './db';
 import { todos } from './db/schema';
 import { sql } from 'drizzle-orm';
 import { cors } from 'hono/cors';
-// import cors = require("cors");
 
 const app = new Hono();
 
@@ -13,25 +12,16 @@ app.use(
   '*',
   cors({
     origin: 'https://w3-web.vercel.app',
-    allowHeaders: ['X-Custom-Header', 'Upgrade-Insecure-Requests'],
+    allowHeaders: ['Content-Type'],
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE'],
-    exposeHeaders: ['Content-Length', 'X-Kuma-Revision'],
-    maxAge: 600,
-    credentials: true,
   })
-)
+);
 
-// app.use('*', cors({
-//   origin: 'https://w3-web.vercel.app', // Adjust the origin to your frontend's URL
-//   allowMethods: ['GET', 'POST', 'PUT', 'DELETE'],
-//   allowHeaders: ['Content-Type'],
-// }));
-
-// app.use('*', cors({
-//   origin: 'https://w3-web.vercel.app/', // Replace with your actual frontend domain
-//   allowMethods: ['GET', 'POST', 'PUT', 'DELETE'],
-//   allowHeaders: ['Content-Type'],
-// }));
+// Log middleware execution for debugging
+app.use('*', (c, next) => {
+  console.log('CORS middleware executed');
+  return next();
+});
 
 const createToDoSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -66,7 +56,7 @@ app.get('/todos/:id', async (c) => {
 app.post('/todos', async (c) => {
   try {
     const body = await c.req.json();
-    console.log('Received body:', body); // Log the received body
+    console.log('Received body:', body);
     const parsed = createToDoSchema.safeParse(body);
 
     if (!parsed.success) {
@@ -89,7 +79,7 @@ app.put('/todos/:id', async (c) => {
   try {
     const id = c.req.param('id');
     const body = await c.req.json();
-    console.log('Received body:', body); // Log the received body
+    console.log('Received body:', body);
     const parsed = createToDoSchema.partial().safeParse(body);
 
     if (!parsed.success) {
@@ -123,4 +113,5 @@ export default {
   port: 3001,
   fetch: app.fetch,
 }
+
 console.log('Server running on port 3001');
