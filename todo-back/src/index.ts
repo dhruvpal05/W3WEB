@@ -3,8 +3,15 @@ import { z } from 'zod';
 import { db } from './db';
 import { todos } from './db/schema';
 import { sql } from 'drizzle-orm';
+import { cors } from 'hono/cors';
 
 const app = new Hono();
+
+app.use('*', cors({
+  origin: 'http://localhost:3000', // Adjust the origin to your frontend's URL
+  allowMethods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowHeaders: ['Content-Type'],
+}));
 
 const createToDoSchema = z.object({
   title: z.string().min(1, "Title is required"),
