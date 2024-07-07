@@ -1,5 +1,4 @@
 import { Todo } from "./types/tasks";
-
 const baseUrl = 'http://localhost:3001';
 
 export const getAllTodos = async (): Promise<Todo[]> => {
