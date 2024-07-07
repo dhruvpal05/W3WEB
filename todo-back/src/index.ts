@@ -8,14 +8,14 @@ import { cors } from 'hono/cors';
 const app = new Hono();
 
 // Enable CORS for all routes
-app.use(
-  '*',
-  cors({
-    origin: 'https://w3-web.vercel.app',
-    allowHeaders: ['Content-Type'],
-    allowMethods: ['GET', 'POST', 'PUT', 'DELETE'],
-  })
-);
+// app.use(
+//   '*',
+//   cors({
+//     origin: 'https://w3-web.vercel.app',
+//     allowHeaders: ['Content-Type'],
+//     allowMethods: ['GET', 'POST', 'PUT', 'DELETE'],
+//   })
+// );
 
 app.use(
   '*',
