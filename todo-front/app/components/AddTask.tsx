@@ -13,17 +13,16 @@ const AddTask = () => {
   const { data: session } = useSession();
 
   const handleSubmitNewTodo: FormEventHandler<HTMLFormElement> = async (e) => {
-    console.log('handleSubmitNewTodo called');
+    console.log('handleSubmitNewTodo');
     e.preventDefault();
-    console.log('New task value:', newTaskValue);
-
+    console.log(newTaskValue);
+    
     try {
       await addTodo({
         id: Date.now().toString(),
         title: newTaskValue,
         completed: false,
       });
-      console.log('Todo added successfully');
       setNewTaskValue("");
       setModalOpen(false);
       router.refresh();

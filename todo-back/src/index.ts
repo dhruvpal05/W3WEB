@@ -17,6 +17,15 @@ app.use(
   })
 );
 
+app.use(
+  '*',
+  cors({
+    origin: 'http://localhost:3000',
+    allowHeaders: ['Content-Type'],
+    allowMethods: ['GET', 'POST', 'PUT', 'DELETE'],
+  })
+);
+
 // Log middleware execution for debugging
 app.use('*', (c, next) => {
   console.log('CORS middleware executed');

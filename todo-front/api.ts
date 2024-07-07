@@ -1,5 +1,6 @@
 import { Todo } from "./types/tasks";
 const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+import axios from 'axios';
 
 export const getAllTodos = async (): Promise<Todo[]> => {
   try {
@@ -17,31 +18,33 @@ export const addTodo = async (todo: Todo): Promise<Todo> => {
     console.log(`Making request to: ${baseUrl}/todos`);
     console.log(`Request body: ${JSON.stringify(todo)}`);
     
-    const res = await fetch(`${baseUrl}/todos`, {
-      method: 'POST',
+    const response = await axios.post(`${baseUrl}/todos`, todo, {
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify(todo)
     });
     
-    console.log(`Response status: ${res.status}`);
+    console.log(`Response status: ${response.status}`);
     
-    if (!res.ok) {
-      const errorText = await res.text();
-      console.error(`Error response text: ${errorText}`);
-      throw new Error(`Failed to add todo, status: ${res.status}`);
+    if (response.status !== 201) {
+      console.error(`Error response data: ${response.data}`);
+      throw new Error(`Failed to add todo, status: ${response.status}`);
     }
     
-    const data = await res.json();
-    console.log('Response data:', data);
+    console.log('Response data:', response.data);
     
-    return data;
+    return response.data;
   } catch (error) {
-    console.error('Error adding todo:', error);
+    if (axios.isAxiosError(error)) {
+      console.error('Axios error:', error.message);
+      console.error('Error response data:', error.response?.data);
+    } else {
+      console.error('Unexpected error:', error);
+    }
     throw error;
   }
 }
+
 
 export const editTodo = async (todo: Todo): Promise<Todo> => {
   try {
