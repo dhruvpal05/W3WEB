@@ -1,5 +1,5 @@
 import { Todo } from "./types/tasks";
-const baseUrl = 'http://localhost:3001';
+const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
 export const getAllTodos = async (): Promise<Todo[]> => {
   try {
@@ -14,6 +14,9 @@ export const getAllTodos = async (): Promise<Todo[]> => {
 
 export const addTodo = async (todo: Todo): Promise<Todo> => {
   try {
+    console.log(`Making request to: ${baseUrl}/todos`);
+    console.log(`Request body: ${JSON.stringify(todo)}`);
+    // const res = await fetch(`${baseUrl}/todos`, { cache: 'no-store' });
     const res = await fetch(`${baseUrl}/todos`, {
       method: 'POST',
       headers: {
@@ -21,8 +24,17 @@ export const addTodo = async (todo: Todo): Promise<Todo> => {
       },
       body: JSON.stringify(todo)
     });
-    if (!res.ok) throw new Error('Failed to add todo');
-    return await res.json();
+    
+    console.log(`Response status: ${res.status}`);
+    
+    if (!res.ok) {
+      throw new Error(`Failed to add todo, status: ${res.status}`);
+    }
+    
+    const data = await res.json();
+    console.log('Response data:', data);
+    
+    return data;
   } catch (error) {
     console.error('Error adding todo:', error);
     throw error;
