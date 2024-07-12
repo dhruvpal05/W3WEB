@@ -20,19 +20,16 @@ const TodoList: React.FC<TodoListProps> = ({ tasks }) => {
             <th>Actions</th>
           </tr>
         </thead>
-        {!session && (
-          <>
-            <tbody>
-              <tr>
-                <td colSpan={2} className='text-center'>Please sign in to view tasks</td>
-              </tr>
-            </tbody>
-          </>
-        )}
         <tbody>
-          {tasks.map((task) => (
-            <Task key={task.id} task={task} />
-          ))}
+          {!session ? (
+            <tr>
+              <td colSpan={2} className='text-center'>Please sign in to view tasks</td>
+            </tr>
+          ) : (
+            tasks.map((task) => (
+              <Task key={task.id} task={task} />
+            ))
+          )}
         </tbody>
       </table>
     </div>

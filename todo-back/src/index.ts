@@ -8,23 +8,23 @@ import { cors } from 'hono/cors';
 const app = new Hono();
 
 // Enable CORS for all routes
-// app.use(
-//   '*',
-//   cors({
-//     origin: 'https://w3-web.vercel.app',
-//     allowHeaders: ['Content-Type'],
-//     allowMethods: ['GET', 'POST', 'PUT', 'DELETE'],
-//   })
-// );
-
 app.use(
   '*',
   cors({
-    origin: 'http://localhost:3000',
+    origin: ['https://w3-web.vercel.app','http://localhost:3000'],
     allowHeaders: ['Content-Type'],
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE'],
   })
 );
+
+// app.use(
+//   '*',
+//   cors({
+//     origin: 'http://localhost:3000',
+//     allowHeaders: ['Content-Type'],
+//     allowMethods: ['GET', 'POST', 'PUT', 'DELETE'],
+//   })
+// );
 
 // Log middleware execution for debugging
 app.use('*', (c, next) => {
